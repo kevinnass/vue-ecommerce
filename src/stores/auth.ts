@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import type { APIResponse, User } from '@/types/index'
 import { getLocalStorageData } from '@/lib/utils'
 
-export const useAuthStore = defineStore('counter', {
+export const useAuthStore = defineStore('AuthStore', {
   state: () => ({
     user: getLocalStorageData<User | null>('currentUserContent', true)
   }),

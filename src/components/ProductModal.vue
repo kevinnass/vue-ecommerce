@@ -1,11 +1,4 @@
 <script setup lang="ts">
-  import Modal from '@/components/ui/Modal.vue';
-  import FileUploader from '@/components/FileUploader.vue';
-  import { useObjectUrl } from '@vueuse/core';
-  
-  import productModal from '@/composables/useProductModal';
-  const { isOpen, onClose } = productModal();
-  import { computed, ref } from 'vue';
   import {
     Select,
     SelectContent,
@@ -14,11 +7,19 @@
     SelectTrigger,
     SelectValue,
   } from '@/components/ui/select';
+  import Modal from '@/components/ui/Modal.vue';
+  import FileUploader from '@/components/FileUploader.vue';
+  import { useObjectUrl } from '@vueuse/core';
+  import productModal from '@/composables/useProductModal';
+  import { computed, ref } from 'vue';
   import { Input } from '@/components/ui/input';
-  import { Button } from '@/components/ui/button';
-  
+  import { Button } from '@/components/ui/button';  
   import { Label } from '@/components/ui/label';
   import { useGlobalLoader } from 'vue-global-loader';
+  import { useProductStore } from '@/stores/product';
+  import { useCategoryStore } from '@/stores/category';
+
+  const { isOpen, onClose } = productModal();
   const { displayLoader, destroyLoader } = useGlobalLoader();
   type PAYLOAD = {
     name: string;
@@ -39,10 +40,8 @@
       'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos accusamus tenetur saepe expedita nisi, dolorum doloremque eligendi. Alias, dolorem perferendis?',
     category: undefined,
   });
-  import { useCategoryStore } from '@/stores/category';
   const categoryStore = useCategoryStore();
-  // import { useProductStore } from '@/stores/productStore';
-  // const productStore = useProductStore();
+  const productStore = useProductStore();
   const categories = computed(() => categoryStore.categoriesData.categories);
   const mainImagePreview = ref<string[]>([]);
   const subImagesPreviews = ref<string[]>([]);
@@ -97,7 +96,7 @@
   const onSubmit = async () => {
     try {
       displayLoader();
-      // await productStore.createProduct(form.value);
+      await productStore.createProduct(form.value);
       onClose();
     } catch (error) {
       console.log(error);
