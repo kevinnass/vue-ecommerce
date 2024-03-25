@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import ProductModal from '@/components/ProductModal.vue'
 import useProductModal from '@/composables/useProductModal';
@@ -8,6 +9,7 @@ import { useCategoryStore } from '@/stores/category';
 import { useProductStore } from '@/stores/product'
 import { Icon } from '@iconify/vue';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Pagination, PaginationEllipsis, PaginationFirst, PaginationLast, PaginationList, PaginationListItem, PaginationNext, PaginationPrev, } from '@/components/ui/pagination';
 
 const { onOpen, isOpen } = useProductModal();
 const { displayLoader, destroyLoader } = useGlobalLoader();
@@ -17,6 +19,7 @@ const products = computed(() => productStore.productsData.products);
 const totalPages = computed(() => productStore.productsData.totalPages);
 const totalProducts = computed(() => productStore.productsData.totalProducts);
 const productsData = computed(() => productStore.productsData);
+const currentPage = ref(1);
 
 const fetchCategories = async () => {
   try {
@@ -45,6 +48,18 @@ const initialSetup = async () => {
     destroyLoader();
   }
 }
+
+const deleteProduct = async (id:string) => {
+  try {
+    displayLoader();
+
+    await productStore.deleteProduct(id);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    destroyLoader();
+  }
+};
 
 onMounted(async () => {
   await initialSetup();
@@ -84,12 +99,57 @@ onMounted(async () => {
               <Icon icon="tabler:pencil" class="h-4 w-4" />
             </Button>
             <!-- <Button variant="destructive" @click="deleteProduct(product._id)"> -->
-            <Button variant="destructive" @click="">
+            <Button variant="destructive" @click="deleteProduct(product._id)">
               <Icon icon="tabler:trash" class="h-4 w-4" />
             </Button>
           </div>
         </CardFooter>
       </Card>
+    </div>
+
+    <div
+      class="w-full flex justify-center"
+
+
+      v-if="Object.keys(productsData).length && productsData.products.length"
+    >
+      <Pagination
+        v-slot="{ page }"
+        :total="totalProducts"
+        :default-page="1"
+        :items-per-page="2"
+      >
+        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+          <PaginationFirst @click="currentPage = 1" />
+          <PaginationPrev @click="currentPage = currentPage - 1" />
+
+          <template v-for="(item, index) in items">
+            <PaginationListItem
+              v-if="item.type === 'page'"
+              :key="index"
+              :value="item.value"
+              as-child
+            >
+              <Button
+                class="w-10 h-10 p-0"
+                :variant="item.value === page ? 'default' : 'outline'"
+                @click="
+                  async () => {
+                    currentPage = item.value;
+                    await fetchProducts();
+                  }
+                "
+              >
+                {{ item.value }}
+              </Button>
+            </PaginationListItem>
+            <PaginationEllipsis v-else :key="item.type" :index="index" />
+          </template>
+
+          <PaginationNext @click="currentPage = currentPage + 1" />
+          <PaginationLast @click="currentPage = totalPages" />
+        </PaginationList>
+      </Pagination>
     </div>
   </div>
   </template>
