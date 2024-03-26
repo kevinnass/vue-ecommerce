@@ -4,7 +4,6 @@
   import { useObjectUrl } from '@vueuse/core';
   
   import productModal from '@/composables/useProductModal';
-  const { isOpen, onClose } = productModal();
   import { computed, ref, onMounted } from 'vue';
   import { useRoute } from 'vue-router';
   import {
@@ -17,9 +16,12 @@
   } from '@/components/ui/select';
   import { Input } from '@/components/ui/input';
   import { Button } from '@/components/ui/button';
-  
   import { Label } from '@/components/ui/label';
   import { useGlobalLoader } from 'vue-global-loader';
+  import { useCategoryStore } from '@/stores/category';
+  import { useProductStore } from '@/stores/product';
+  
+  const { isOpen, onClose } = productModal();
   const { displayLoader, destroyLoader } = useGlobalLoader();
   type PAYLOAD = {
     name: string;
@@ -40,13 +42,13 @@
       'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos accusamus tenetur saepe expedita nisi, dolorum doloremque eligendi. Alias, dolorem perferendis?',
     category: undefined,
   });
-  import { useCategoryStore } from '@/stores/category';
   const categoryStore = useCategoryStore();
-  import { useProductStore } from '@/stores/product';
   const productStore = useProductStore();
   const categories = computed(() => categoryStore.categoriesData.categories);
   const mainImagePreview = ref<string[]>([]);
   const subImagesPreviews = ref<string[]>([]);
+  const route = useRoute();
+
   const onMainImageDrop = (files: File[] | null) => {
     form.value.mainImage = files && files.length > 0 ? files[0] : undefined;
     if (files && files.length) {
@@ -63,6 +65,7 @@
       });
     }
   };
+ 
   const onMainImageChange = (files: FileList | null) => {
     form.value.mainImage = files && files.length > 0 ? files[0] : undefined;
     if (files && files.length) {
@@ -78,6 +81,7 @@
       });
     }
   };
+  
   const onSubImageDrop = (files: File[] | null) => {
     form.value.subImages = files && files.length > 0 ? files : undefined;
     if (files && files.length) {
@@ -89,6 +93,7 @@
       });
     }
   };
+ 
   const onSubImageChange = (files: FileList | null) => {
     form.value.subImages = files && files.length > 0 ? Array.from(files) : undefined;
     if (files && files.length) {
@@ -100,7 +105,6 @@
       });
     }
   };
-  const route = useRoute();
   
   const onSubmit = async () => {
     try {
@@ -113,6 +117,7 @@
       destroyLoader();
     }
   };
+
   const fetchProduct = async () => {
     try {
       displayLoader();
@@ -136,6 +141,7 @@
       destroyLoader();
     }
   };
+
   onMounted(async () => {
     await fetchProduct();
   });

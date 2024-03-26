@@ -3,7 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 // import GlobalLoader from 'vue-global-loader';
 // import CircleSpinner from 'vue-global-loader';
 import { Notivue, Notifications } from 'notivue';
-// import Navbar from '@/components/Navbar.vue'
+import Navbar from "@/components/Navbar.vue"
 
 </script>
 
@@ -12,11 +12,11 @@ import { Notivue, Notifications } from 'notivue';
     <CircleSpinner />
   </GlobalLoader> -->
 
-  <!-- <Notivue v-slot="item">
+  <Notivue v-slot="item">
     <Notifications :item="item" />
-  </Notivue> -->
+  </Notivue> 
 
-  <!-- <Navbar /> -->
+  <Navbar />
 
   <RouterView  />
 </template>
